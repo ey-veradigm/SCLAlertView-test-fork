@@ -3,7 +3,49 @@ SCLAlertView-Objective-C
 
 Animated Alert View written in Swift but ported to Objective-C, which can be used as a `UIAlertView` or `UIAlertController` replacement.
 
-![Build Status](https://github.com/dogo/SCLAlertView/workflows/Building/badge.svg)
+### Private FollowMyHealth copy
+
+This **private** repository imports the complete Git ancestry of
+[dogo/SCLAlertView](https://github.com/dogo/SCLAlertView) through stable release
+`1.4.2` (`09d5749dc3acfe0be3d6779845058252b83b9e59`), the latest stable release
+checked on November 18, 2026. Upstream tags, the original authorship, the MIT
+[license](LICENSE), and the acknowledgements below are preserved. Private release
+`1.4.3-fmh.1` adds Dynamic Type; upstream tag `1.4.2` does **not** contain these changes.
+Do not publish this copy or its podspec to CocoaPods trunk.
+
+FMHmobile-iOS has not been changed and does not consume this copy yet. See
+[private CocoaPods consumption](#followmyhealth-private-cocoapods-consumption)
+for a future, separately reviewed dependency change.
+
+### Dynamic Type
+
+Titles, body text, action/close buttons, and fields created by `addTextField:setDefaultText:`
+follow the alert's iOS content-size-category traits, including all accessibility
+sizes. Changes while visible remeasure the existing controls without dismissing
+the alert or replacing its text fields.
+
+The existing font-family/size APIs still work. Sizes and custom `font` entries in
+button formatting dictionaries are **unscaled base fonts at the Large category**.
+The same applies to font attributes returned by `attributedFormatBlock`; other
+attributes, such as links, colors, and emphasis, are retained. The alert retains
+unscaled sources and applies `UIFontMetrics` once per update, rather than scaling
+the previously displayed font. Do not pre-scale these base-font inputs or also
+enable automatic scaling on library-managed controls. Standard preferred fonts
+assigned directly to controls are left to UIKit instead of being scaled twice.
+
+Text wraps without a line limit. The panel stays within its host's safe area and
+above a docked keyboard; its contents, including the buttons, scroll together
+when necessary. Buttons and built-in fields have a minimum 44-point height.
+The decorative circle hides temporarily if it would leave less than a line of
+text or a control's minimum height visible in a short keyboard-constrained host.
+`horizontalButtons` remains a preference: accessibility sizes or titles that do
+not fit side by side use a vertical stack. Custom views, switch labels, and
+fields supplied through `addCustomTextField:` retain caller-managed typography
+and sizing.
+
+The following badges describe **upstream**, not validation of this private copy.
+
+![Upstream Build Status](https://github.com/dogo/SCLAlertView/workflows/Building/badge.svg)
 [![Cocoapods](http://img.shields.io/cocoapods/v/SCLAlertView-Objective-C.svg)](http://cocoapods.org/?q=SCLAlertView-Objective-C)
 [![Pod License](http://img.shields.io/cocoapods/l/SCLAlertView-Objective-C.svg)](https://github.com/dogo/SCLAlertView/blob/master/LICENSE)
 [![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/Carthage/Carthage)
@@ -324,6 +366,35 @@ typedef NS_ENUM(NSInteger, SCLAlertViewBackground)
 ```
 
 ### Installation
+
+#### FollowMyHealth private CocoaPods consumption
+
+In a **future** FMHmobile-iOS change, replace the existing declaration of the same
+pod with a pinned private Git source (do not add a second copy):
+
+```ruby
+pod 'SCLAlertView-Objective-C',
+    :git => 'git@github.com:ey-veradigm/SCLAlertView-test-fork.git',
+    :tag => '1.4.3-fmh.1'
+```
+
+Keep the existing pod name, imports, and iOS 12.0-or-newer deployment target. No
+private specs repository is required for a Git-sourced pod. Developers need
+repository read access and GitHub SSH authentication; CI needs a read-only deploy
+key or appropriately scoped GitHub App credentials. HTTPS with an authenticated
+Git credential helper is also supported by the podspec. Never put tokens or
+private keys in a Podfile, URL, or source file.
+
+From that application's existing Bundler/CocoaPods environment, run
+`bundle exec pod update SCLAlertView-Objective-C --no-repo-update`, inspect the
+targeted Podfile.lock diff, and commit both Podfile and Podfile.lock. The lockfile
+must identify this private remote and the release tag's commit. Validate the
+application's alerts before adopting it; this repository does not perform that
+dependency switch.
+
+The remaining installation examples refer to the **public upstream** package
+and do not install the private Dynamic Type changes.
+
 SCLAlertView-Objective-C is available through :
 
 ### [CocoaPods](https://cocoapods.org)
@@ -337,6 +408,37 @@ To install add the following line to your Podfile:
 ```
 github "dogo/SCLAlertView"
 ```    
+
+### Validation
+
+The existing `SCLAlertView` XCTest target covers every text-size category,
+repeated live changes, custom and attributed fonts, small portrait/landscape
+hosts, scrolling and button hit testing, horizontal fallback, timer placement,
+keyboard frame changes, retained editing/selection, and new-window alerts with
+absent title/body text.
+The build workflow runs that target, builds the framework, and lints the pod.
+
+On macOS with Xcode and an installed simulator (adjust the destination as needed):
+
+```sh
+xcodebuild -project SCLAlertView.xcodeproj -scheme SCLAlertView \
+  -destination 'platform=iOS Simulator,name=iPhone 16,OS=26.1' \
+  clean build test CODE_SIGNING_ALLOWED=NO
+xcodebuild -project SCLAlertView.xcodeproj -scheme SCLAlertViewFramework \
+  -destination 'generic/platform=iOS Simulator' build CODE_SIGNING_ALLOWED=NO
+bundle install
+bundle exec pod lib lint SCLAlertView-Objective-C.podspec --allow-warnings
+```
+
+Linux cannot compile UIKit, run these XCTest/simulator tests, or perform the
+Xcode build stage of CocoaPods lint. Ruby/podspec and project-structure checks
+are not substitutes for those Apple-tooling checks.
+
+Before FMH adoption, manually check VoiceOver focus/scrolling, the smallest
+supported device in both orientations, iPad split-screen/modal presentation,
+new-window alerts, keyboard editing, and changing per-app Text Size while an
+alert is visible. Include the largest Accessibility Text Size and confirm typed
+text, selection, and first responder are retained.
 
 ### Collaboration
 I tried to build an easy to use API, while beeing flexible enough for multiple variations, but I'm sure there are ways of improving and adding more features, so feel free to collaborate with ideas, issues and/or pull requests.

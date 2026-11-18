@@ -11,7 +11,7 @@
 
 #define MARGIN_BUTTON 12.0f
 #define DEFAULT_WINDOW_WIDTH 240
-#define MIN_HEIGHT 35.0f
+#define MIN_HEIGHT 44.0f
 
 @implementation SCLButton
 
@@ -59,7 +59,9 @@
 {
     self.frame = CGRectMake(0.0f, 0.0f, windowWidth - (MARGIN_BUTTON * 2), MIN_HEIGHT);
     self.titleLabel.lineBreakMode = NSLineBreakByWordWrapping;
+    self.titleLabel.numberOfLines = 0;
     self.titleLabel.textAlignment = NSTextAlignmentCenter;
+    self.contentEdgeInsets = UIEdgeInsetsMake(10.0f, 12.0f, 10.0f, 12.0f);
     self.layer.cornerRadius = 3.0f;
 }
 
@@ -68,25 +70,43 @@
     CGFloat allButtonsWidth = windowWidth - (MARGIN_BUTTON * 2);
     CGFloat buttonWidth = (allButtonsWidth - ((numberOfButtons - 1) * 10)) / numberOfButtons;
     
-    self.frame = CGRectMake(0.0f, 0.0f, buttonWidth, MIN_HEIGHT);
+    self.frame = CGRectMake(0.0f, 0.0f, buttonWidth, [self sizeThatFits:CGSizeMake(buttonWidth, CGFLOAT_MAX)].height);
 }
 
 - (void)setTitle:(NSString *)title forState:(UIControlState)state
 {
     [super setTitle:title forState:state];
-    self.titleLabel.numberOfLines = 0;
-    
-    // Update title frame.
-    [self.titleLabel sizeToFit];
-    
-    // Update button frame
-    [self layoutIfNeeded];
-    
-    // Get height needed to display title label completely
-    CGFloat buttonHeight = MAX(self.titleLabel.frame.size.height, MIN_HEIGHT);
-    
-    // Update button frame
-    self.frame = CGRectMake(self.frame.origin.x, self.frame.origin.y, self.frame.size.width, buttonHeight);
+    CGRect frame = self.frame;
+    frame.size.height = [self sizeThatFits:CGSizeMake(CGRectGetWidth(frame), CGFLOAT_MAX)].height;
+    self.frame = frame;
+    [self invalidateIntrinsicContentSize];
+}
+
+- (CGSize)sizeThatFits:(CGSize)size
+{
+    UIEdgeInsets content = self.contentEdgeInsets;
+    UIEdgeInsets title = self.titleEdgeInsets;
+    CGFloat accessoryWidth = _timer ? CGRectGetWidth(_timer.bounds) + 10.0f : 0.0f;
+    CGFloat horizontalPadding = content.left + content.right + title.left + title.right + accessoryWidth;
+    CGFloat labelWidth = MAX(1.0f, size.width - horizontalPadding);
+    CGSize labelSize = [self.titleLabel sizeThatFits:CGSizeMake(labelWidth, CGFLOAT_MAX)];
+    CGFloat height = ceil(labelSize.height + content.top + content.bottom + title.top + title.bottom);
+    return CGSizeMake(MIN(size.width, ceil(labelSize.width + horizontalPadding)), MAX(height, MIN_HEIGHT));
+}
+
+- (CGRect)contentRectForBounds:(CGRect)bounds
+{
+    CGRect content = [super contentRectForBounds:bounds];
+    if (_timer) {
+        content.size.width = MAX(0.0f, content.size.width - CGRectGetWidth(_timer.bounds) - 10.0f);
+    }
+    return content;
+}
+
+- (void)layoutSubviews
+{
+    [super layoutSubviews];
+    [_timer updateFrame:self.bounds.size];
 }
 
 - (void)setHighlighted:(BOOL)highlighted
@@ -102,12 +122,16 @@
 
 - (void)setTimer:(SCLTimerDisplay *)timer
 {
+    if (_timer != timer) {
+        [_timer removeFromSuperview];
+    }
     _timer = timer;
-    if (!timer.superview) {
+    if (timer && !timer.superview) {
         [self addSubview:timer];
     }
     [timer updateFrame:self.frame.size];
     timer.color = self.titleLabel.textColor;
+    [self setNeedsLayout];
 }
 
 #pragma mark - Button Apperance

@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.4.3-fmh.1 (private copy)
+
+Based on upstream stable `1.4.2`, retaining its complete Git ancestry and MIT license.
+
+- Scale titles, plain/attributed messages, buttons, and built-in text fields with
+  Dynamic Type, including live accessibility-size changes and custom base fonts.
+- Measure content afresh, wrap titles/buttons, and scroll the complete alert
+  within its host's safe area and above docked keyboards.
+- Preserve horizontal buttons when they fit, fall back to a vertical stack when
+  needed, and keep button timers clear of their titles after resizing.
+- Add focused XCTest regressions and private CocoaPods consumption instructions.
+  FMHmobile-iOS and its dependency declaration are unchanged.
+
 ## [1.3.0](https://github.com/dogo/SCLAlertView/tree/1.3.0) (2023-12-20)
 
 [Full Changelog](https://github.com/dogo/SCLAlertView/compare/1.2.0...1.3.0)

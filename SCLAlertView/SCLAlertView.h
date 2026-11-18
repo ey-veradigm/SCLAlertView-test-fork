@@ -135,7 +135,7 @@ typedef NS_ENUM(NSInteger, SCLAlertViewBackground)
 /// Status bar style.
 @property (nonatomic) UIStatusBarStyle statusBarStyle;
 
-/// If YES, buttons are laid out horizontally instead of vertically.
+/// Requests horizontal buttons; accessibility sizes or insufficient space use a vertical stack.
 @property (nonatomic) BOOL horizontalButtons;
 
 #pragma mark - Initializers
@@ -262,7 +262,8 @@ typedef NS_ENUM(NSInteger, SCLAlertViewBackground)
 #pragma mark - Fonts
 
 /**
- Sets the title font family and size.
+ Sets the title font family and unscaled size at the Large content size category.
+ The alert applies Dynamic Type scaling, including while it is visible.
 
  @param titleFontFamily The font family name.
  @param size The font size.
@@ -270,7 +271,8 @@ typedef NS_ENUM(NSInteger, SCLAlertViewBackground)
 - (void)setTitleFontFamily:(NSString *)titleFontFamily withSize:(CGFloat)size;
 
 /**
- Sets the body text font family and size.
+ Sets the body text font family and unscaled size at the Large content size category.
+ Also supplies the initial font for subsequently added built-in text fields.
 
  @param bodyTextFontFamily The font family name.
  @param size The font size.
@@ -278,7 +280,8 @@ typedef NS_ENUM(NSInteger, SCLAlertViewBackground)
 - (void)setBodyTextFontFamily:(NSString *)bodyTextFontFamily withSize:(CGFloat)size;
 
 /**
- Sets the buttons font family and size.
+ Sets the buttons font family and unscaled size at the Large content size category.
+ Per-button custom fonts are preserved.
 
  @param buttonsFontFamily The font family name.
  @param size The font size.

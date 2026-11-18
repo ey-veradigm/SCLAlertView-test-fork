@@ -8,8 +8,9 @@
 
 #import "SCLTextView.h"
 
-static const CGFloat kSCLTextViewHeight = 35.0f;
+static const CGFloat kSCLTextViewHeight = 44.0f;
 static const CGFloat kSCLTextViewHorizontalPadding = 8.0f;
+static const CGFloat kSCLTextViewVerticalPadding = 16.0f;
 
 @implementation SCLTextView
 
@@ -67,17 +68,13 @@ static const CGFloat kSCLTextViewHorizontalPadding = 8.0f;
 
 - (CGSize)intrinsicContentSize {
     CGSize base = [super intrinsicContentSize];
-    if (base.height <= 0) {
-        base.height = kSCLTextViewHeight;
-    } else {
-        base.height = MAX(base.height, kSCLTextViewHeight);
-    }
+    base.height = MAX(MAX(base.height, kSCLTextViewHeight), ceil(self.font.lineHeight + kSCLTextViewVerticalPadding));
     return base;
 }
 
 - (CGSize)sizeThatFits:(CGSize)size {
     CGSize fit = [super sizeThatFits:size];
-    fit.height = MAX(fit.height, kSCLTextViewHeight);
+    fit.height = MAX(MAX(fit.height, kSCLTextViewHeight), ceil(self.font.lineHeight + kSCLTextViewVerticalPadding));
     return fit;
 }
 

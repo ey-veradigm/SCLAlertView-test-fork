@@ -28,9 +28,19 @@ jobs:
           ruby-version: 3.1.2
           bundler-cache: true
 
-      - name: Building ${{ matrix.scheme }} on ${{ matrix.destination }}
+      - name: Building and testing ${{ matrix.scheme }} on ${{ matrix.destination }}
         run: |
           set -o pipefail && xcodebuild -project SCLAlertView.xcodeproj \
             -scheme ${{ matrix.scheme }} \
             -destination '${{ matrix.destination }}' \
-            clean build | xcbeautify --renderer github-actions
+            clean build test CODE_SIGNING_ALLOWED=NO | xcbeautify --renderer github-actions
+
+      - name: Build framework
+        run: |
+          set -o pipefail && xcodebuild -project SCLAlertView.xcodeproj \
+            -scheme SCLAlertViewFramework \
+            -destination 'generic/platform=iOS Simulator' \
+            build CODE_SIGNING_ALLOWED=NO | xcbeautify --renderer github-actions
+
+      - name: Validate CocoaPods integration
+        run: bundle exec pod lib lint SCLAlertView-Objective-C.podspec --allow-warnings

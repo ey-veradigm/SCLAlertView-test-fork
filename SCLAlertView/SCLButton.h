@@ -60,6 +60,7 @@ typedef NS_ENUM(NSInteger, SCLActionType)
  - borderWidth (NSNumber/CGFloat)
  - borderColor (UIColor)
  - textColor (UIColor)
+ - font (UIFont, unscaled at the Large content size category)
  */
 @property (copy, nonatomic, nullable) CompleteButtonFormatBlock completeButtonFormatBlock;
 
@@ -73,6 +74,7 @@ typedef NS_ENUM(NSInteger, SCLActionType)
  - borderWidth (NSNumber/CGFloat)
  - borderColor (UIColor)
  - textColor (UIColor)
+ - font (UIFont, unscaled at the Large content size category)
  */
 @property (copy, nonatomic, nullable) ButtonFormatBlock buttonFormatBlock;
 
@@ -101,7 +103,8 @@ typedef NS_ENUM(NSInteger, SCLActionType)
  Applies configuration returned by a format block.
 
  @param buttonConfig The configuration dictionary.
- @discussion Supported keys: backgroundColor, borderWidth, borderColor, textColor.
+ @discussion Supported keys: backgroundColor, borderWidth, borderColor, textColor, font.
+ Supply an unscaled font; SCLAlertView applies Dynamic Type scaling.
  */
 - (void)parseConfig:(NSDictionary *)buttonConfig;
 
