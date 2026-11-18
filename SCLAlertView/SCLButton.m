@@ -76,6 +76,8 @@
 - (void)setTitle:(NSString *)title forState:(UIControlState)state
 {
     [super setTitle:title forState:state];
+    // UIButton synchronizes its title label during layout.
+    [self layoutIfNeeded];
     CGRect frame = self.frame;
     frame.size.height = [self sizeThatFits:CGSizeMake(CGRectGetWidth(frame), CGFLOAT_MAX)].height;
     self.frame = frame;

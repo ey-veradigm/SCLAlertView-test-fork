@@ -8,9 +8,10 @@ Animated Alert View written in Swift but ported to Objective-C, which can be use
 This **private** repository imports the complete Git ancestry of
 [dogo/SCLAlertView](https://github.com/dogo/SCLAlertView) through stable release
 `1.4.2` (`09d5749dc3acfe0be3d6779845058252b83b9e59`), the latest stable release
-checked on November 18, 2026. Upstream tags, the original authorship, the MIT
-[license](LICENSE), and the acknowledgements below are preserved. Private release
-`1.4.3-fmh.1` adds Dynamic Type; upstream tag `1.4.2` does **not** contain these changes.
+checked on November 18, 2026. Upstream commit history, the original authorship, the
+MIT [license](LICENSE), and the acknowledgements below are preserved. Private
+podspec version `1.4.3-fmh.1` adds Dynamic Type; upstream release `1.4.2` does
+**not** contain these changes. This copy uses a commit pin, not a fork release tag.
 Do not publish this copy or its podspec to CocoaPods trunk.
 
 FMHmobile-iOS has not been changed and does not consume this copy yet. See
@@ -370,16 +371,17 @@ typedef NS_ENUM(NSInteger, SCLAlertViewBackground)
 #### FollowMyHealth private CocoaPods consumption
 
 In a **future** FMHmobile-iOS change, replace the existing declaration of the same
-pod with a pinned private Git source (do not add a second copy):
+pod with this immutable private implementation commit (do not add a second copy):
 
 ```ruby
 pod 'SCLAlertView-Objective-C',
     :git => 'git@github.com:ey-veradigm/SCLAlertView-test-fork.git',
-    :tag => '1.4.3-fmh.1'
+    :commit => '98fbb5dc316f9376de1b31096c7ff7e6121d71b1'
 ```
 
 Keep the existing pod name, imports, and iOS 12.0-or-newer deployment target. No
-private specs repository is required for a Git-sourced pod. Developers need
+private specs repository or fork release tag is required: CocoaPods uses the
+Podfile's explicit Git/commit override. Developers need
 repository read access and GitHub SSH authentication; CI needs a read-only deploy
 key or appropriately scoped GitHub App credentials. HTTPS with an authenticated
 Git credential helper is also supported by the podspec. Never put tokens or
@@ -388,9 +390,10 @@ private keys in a Podfile, URL, or source file.
 From that application's existing Bundler/CocoaPods environment, run
 `bundle exec pod update SCLAlertView-Objective-C --no-repo-update`, inspect the
 targeted Podfile.lock diff, and commit both Podfile and Podfile.lock. The lockfile
-must identify this private remote and the release tag's commit. Validate the
-application's alerts before adopting it; this repository does not perform that
-dependency switch.
+must identify this private remote and the exact implementation commit above.
+Pin future updates to a newly reviewed implementation SHA rather than a floating
+branch. Validate the application's alerts before adopting it; this repository
+does not perform that dependency switch.
 
 The remaining installation examples refer to the **public upstream** package
 and do not install the private Dynamic Type changes.
@@ -416,13 +419,16 @@ repeated live changes, custom and attributed fonts, small portrait/landscape
 hosts, scrolling and button hit testing, horizontal fallback, timer placement,
 keyboard frame changes, retained editing/selection, and new-window alerts with
 absent title/body text.
-The build workflow runs that target, builds the framework, and lints the pod.
+The build workflow is configured to run that target, build the framework, and
+lint the pod. It uses an Intel macOS runner and selects an installed iPhone
+simulator instead of depending on a particular simulator OS image.
 
 On macOS with Xcode and an installed simulator (adjust the destination as needed):
 
 ```sh
+xcrun simctl list devices available
 xcodebuild -project SCLAlertView.xcodeproj -scheme SCLAlertView \
-  -destination 'platform=iOS Simulator,name=iPhone 16,OS=26.1' \
+  -destination 'platform=iOS Simulator,name=iPhone 16' \
   clean build test CODE_SIGNING_ALLOWED=NO
 xcodebuild -project SCLAlertView.xcodeproj -scheme SCLAlertViewFramework \
   -destination 'generic/platform=iOS Simulator' build CODE_SIGNING_ALLOWED=NO
