@@ -10,6 +10,8 @@ Based on upstream stable `1.4.2`, retaining its complete Git ancestry and MIT li
   within its host's safe area and above docked keyboards.
 - Preserve horizontal buttons when they fit, fall back to a vertical stack when
   needed, and keep button timers clear of their titles after resizing.
+- Preserve unscaled message font runs during attribute edits and reserve fixed
+  viewport clearance so scrolled content cannot pass underneath the circle.
 - Add focused XCTest regressions and private CocoaPods consumption instructions.
   FMHmobile-iOS and its dependency declaration are unchanged.
 

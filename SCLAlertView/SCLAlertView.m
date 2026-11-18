@@ -202,6 +202,7 @@ SCLTimerDisplay *buttonTimer;
     _viewText.accessibilityTraits = UIAccessibilityTraitStaticText;
     _contentView = [[UIView alloc] init];
     _contentScrollView = [[UIScrollView alloc] init];
+    _contentScrollView.clipsToBounds = YES;
     _contentScrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
     _contentScrollView.keyboardDismissMode = UIScrollViewKeyboardDismissModeInteractive;
     _circleView = [[UIView alloc] init];
@@ -329,7 +330,11 @@ SCLTimerDisplay *buttonTimer;
     CGFloat textWidth = MAX(1.0f, width - 24.0f);
     CGFloat circleHeight = _useLargerIcon ? 106.0f : kCircleHeight;
     CGFloat circleBackgroundHeight = _useLargerIcon ? 122.0f : kCircleHeightBackground;
-    CGFloat minimumViewportHeight = MAX(44.0f, MAX(_labelTitle.font.lineHeight, _viewText.font.lineHeight));
+    __block CGFloat minimumViewportHeight = MAX(44.0f, MAX(_labelTitle.font.lineHeight, _viewText.font.lineHeight));
+    [_viewText.attributedText enumerateAttribute:NSFontAttributeName inRange:NSMakeRange(0, _viewText.attributedText.length) options:0 usingBlock:^(id value, NSRange range, BOOL *stop) {
+        UIFont *font = value;
+        minimumViewportHeight = MAX(minimumViewportHeight, font.lineHeight);
+    }];
     for (SCLButton *button in _buttons) {
         minimumViewportHeight = MAX(minimumViewportHeight, button.titleLabel.font.lineHeight + button.contentEdgeInsets.top + button.contentEdgeInsets.bottom);
     }
@@ -337,10 +342,11 @@ SCLTimerDisplay *buttonTimer;
         minimumViewportHeight = MAX(minimumViewportHeight, [field sizeThatFits:CGSizeMake(textWidth, CGFLOAT_MAX)].height);
     }
     BOOL showsCircle = _circleViewBackground.superview &&
-        CGRectGetHeight(available) - circleBackgroundHeight / 2.0f >= minimumViewportHeight;
+        CGRectGetHeight(available) - circleBackgroundHeight - 8.0f >= minimumViewportHeight;
     _circleViewBackground.hidden = !showsCircle;
     CGFloat circleOverlap = showsCircle ? circleBackgroundHeight / 2.0f : 0.0f;
-    CGFloat y = circleOverlap + 8.0f;
+    CGFloat headerHeight = circleOverlap + 8.0f;
+    CGFloat y = 0.0f;
 
     if (_labelTitle) {
         CGFloat height = ceil([_labelTitle sizeThatFits:CGSizeMake(textWidth, CGFLOAT_MAX)].height);
@@ -396,15 +402,17 @@ SCLTimerDisplay *buttonTimer;
     }
 
     CGFloat contentHeight = ceil(y + 4.0f);
-    CGFloat height = MIN(contentHeight, MAX(1.0f, CGRectGetHeight(available) - circleOverlap));
+    CGFloat height = MIN(headerHeight + contentHeight, MAX(1.0f, CGRectGetHeight(available) - circleOverlap));
     CGFloat panelY = CGRectGetMinY(available) + circleOverlap + MAX(0.0f, (CGRectGetHeight(available) - circleOverlap - height) / 2.0f);
     _contentView.frame = CGRectMake(CGRectGetMidX(available) - width / 2.0f, panelY, width, height);
     _contentView.layer.cornerRadius = self.cornerRadius ? self.cornerRadius : 5.0f;
-    _contentScrollView.frame = _contentView.bounds;
+    CGFloat viewportY = MIN(headerHeight, height - 1.0f);
+    CGFloat viewportHeight = height - viewportY;
+    _contentScrollView.frame = CGRectMake(0.0f, viewportY, width, viewportHeight);
     _contentScrollView.contentSize = CGSizeMake(width, contentHeight);
-    _contentScrollView.scrollEnabled = contentHeight > height;
+    _contentScrollView.scrollEnabled = contentHeight > viewportHeight;
     CGPoint offset = _contentScrollView.contentOffset;
-    offset.y = MIN(MAX(0.0f, offset.y), MAX(0.0f, contentHeight - height));
+    offset.y = MIN(MAX(0.0f, offset.y), MAX(0.0f, contentHeight - viewportHeight));
     _contentScrollView.contentOffset = CGPointMake(0.0f, offset.y);
 
     _circleViewBackground.frame = CGRectMake(CGRectGetMidX(_contentView.frame) - circleBackgroundHeight / 2.0f, panelY - circleOverlap, circleBackgroundHeight, circleBackgroundHeight);
@@ -537,6 +545,39 @@ SCLTimerDisplay *buttonTimer;
     return scaledFont;
 }
 
+- (NSAttributedString *)baseAttributedTextForEditedText:(NSAttributedString *)editedText
+{
+    NSMutableAttributedString *base = [editedText mutableCopy];
+    NSAttributedString *previousBase = _baseAttributedText;
+    NSAttributedString *previousScaled = _scaledAttributedText;
+    BOOL sameText = [editedText.string isEqualToString:previousScaled.string];
+    void (^restoreFont)(UIFont *, NSRange) = ^(UIFont *font, NSRange range) {
+        if (font) {
+            [base addAttribute:NSFontAttributeName value:font range:range];
+        } else {
+            [base removeAttribute:NSFontAttributeName range:range];
+        }
+    };
+
+    // Attribute edits must not turn unchanged rendered fonts into new base fonts.
+    [editedText enumerateAttribute:NSFontAttributeName inRange:NSMakeRange(0, editedText.length) options:0 usingBlock:^(id font, NSRange range, BOOL *stop) {
+        NSRange searchRange = sameText ? range : NSMakeRange(0, previousScaled.length);
+        [previousScaled enumerateAttribute:NSFontAttributeName inRange:searchRange options:0 usingBlock:^(id renderedFont, NSRange renderedRange, BOOL *stopRendered) {
+            if ([font isEqual:renderedFont]) {
+                if (sameText) {
+                    [previousBase enumerateAttribute:NSFontAttributeName inRange:renderedRange options:0 usingBlock:^(id originalFont, NSRange originalRange, BOOL *stopOriginal) {
+                        restoreFont(originalFont, originalRange);
+                    }];
+                } else {
+                    restoreFont([previousBase attribute:NSFontAttributeName atIndex:renderedRange.location effectiveRange:nil], range);
+                    *stopRendered = YES;
+                }
+            }
+        }];
+    }];
+    return base;
+}
+
 - (void)updateDynamicTypeFonts
 {
     if (_labelTitle) {
@@ -544,7 +585,7 @@ SCLTimerDisplay *buttonTimer;
     }
     if (_viewText && _baseAttributedText) {
         if (_scaledAttributedText && ![_viewText.attributedText isEqualToAttributedString:_scaledAttributedText]) {
-            self.baseAttributedText = _viewText.attributedText;
+            self.baseAttributedText = [self baseAttributedTextForEditedText:_viewText.attributedText];
         }
         NSMutableAttributedString *text = [_baseAttributedText mutableCopy];
         UIFont *defaultFont = [UIFont fontWithName:_bodyTextFontFamily size:_bodyFontSize];

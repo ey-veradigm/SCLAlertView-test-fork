@@ -30,13 +30,17 @@ button formatting dictionaries are **unscaled base fonts at the Large category**
 The same applies to font attributes returned by `attributedFormatBlock`; other
 attributes, such as links, colors, and emphasis, are retained. The alert retains
 unscaled sources and applies `UIFontMetrics` once per update, rather than scaling
-the previously displayed font. Do not pre-scale these base-font inputs or also
-enable automatic scaling on library-managed controls. Standard preferred fonts
-assigned directly to controls are left to UIKit instead of being scaled twice.
+the previously displayed font. Attribute-only edits to a displayed message retain
+the original font bases; genuine font edits supply new unscaled fonts.
+Do not pre-scale these base-font inputs or also enable automatic scaling on
+library-managed controls. Standard preferred fonts assigned directly to controls
+are left to UIKit instead of being scaled twice.
 
 Text wraps without a line limit. The panel stays within its host's safe area and
 above a docked keyboard; its contents, including the buttons, scroll together
 when necessary. Buttons and built-in fields have a minimum 44-point height.
+The scroll viewport starts below fixed circle clearance, so text and controls
+cannot pass underneath the circle at nonzero scroll offsets.
 The decorative circle hides temporarily if it would leave less than a line of
 text or a control's minimum height visible in a short keyboard-constrained host.
 `horizontalButtons` remains a preference: accessibility sizes or titles that do
@@ -417,8 +421,8 @@ github "dogo/SCLAlertView"
 The existing `SCLAlertView` XCTest target covers every text-size category,
 repeated live changes, custom and attributed fonts, small portrait/landscape
 hosts, scrolling and button hit testing, horizontal fallback, timer placement,
-keyboard frame changes, retained editing/selection, and new-window alerts with
-absent title/body text.
+keyboard frame changes, retained editing/selection, attribute-only message edits,
+nonzero-offset circle clearance, and new-window alerts with absent title/body text.
 The build workflow is configured to run that target, build the framework, and
 lint the pod. It uses an Intel macOS runner and selects an installed iPhone
 simulator instead of depending on a particular simulator OS image.

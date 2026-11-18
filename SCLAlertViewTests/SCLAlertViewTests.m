@@ -239,6 +239,92 @@
     }
 }
 
+- (void)testAttributedEditsPreserveUnscaledFontsAcrossRepeatedLayouts {
+    SCLAlertView *alert = [self alertWithWidth:240];
+    UIFont *emphasis = [UIFont fontWithName:@"Courier-Bold" size:18];
+    alert.attributedFormatBlock = ^NSAttributedString *(NSString *value) {
+        NSMutableAttributedString *text = [[NSMutableAttributedString alloc] initWithString:value];
+        [text addAttribute:NSFontAttributeName value:emphasis range:NSMakeRange(0, 4)];
+        return text;
+    };
+    [self showAlert:alert title:@"Attributed edits" message:@"Bold and default text"];
+    [self setCategory:UIContentSizeCategoryAccessibilityExtraExtraExtraLarge forAlert:alert];
+    UIFont *defaultFont = [UIFont fontWithName:@"HelveticaNeue" size:14];
+    for (UIColor *color in @[UIColor.redColor, UIColor.blueColor, UIColor.greenColor]) {
+        NSMutableAttributedString *edited = [alert.viewText.attributedText mutableCopy];
+        [edited addAttribute:NSForegroundColorAttributeName value:color range:NSMakeRange(0, edited.length)];
+        [edited addAttribute:NSUnderlineStyleAttributeName value:@(NSUnderlineStyleSingle) range:NSMakeRange(1, 5)];
+        alert.viewText.attributedText = edited;
+        for (NSUInteger layout = 0; layout < 3; layout++) {
+            [alert.view setNeedsLayout];
+            [alert.view layoutIfNeeded];
+            NSAttributedString *text = alert.viewText.attributedText;
+            [self assertFont:[text attribute:NSFontAttributeName atIndex:0 effectiveRange:nil] base:emphasis style:UIFontTextStyleBody alert:alert];
+            [self assertFont:[text attribute:NSFontAttributeName atIndex:5 effectiveRange:nil] base:defaultFont style:UIFontTextStyleBody alert:alert];
+            XCTAssertEqualObjects([text attribute:NSForegroundColorAttributeName atIndex:0 effectiveRange:nil], color);
+            XCTAssertEqualObjects([text attribute:NSUnderlineStyleAttributeName atIndex:1 effectiveRange:nil], @(NSUnderlineStyleSingle));
+        }
+    }
+
+    NSMutableAttributedString *edited = [alert.viewText.attributedText mutableCopy];
+    [edited appendAttributedString:[edited attributedSubstringFromRange:NSMakeRange(5, 3)]];
+    alert.viewText.attributedText = edited;
+    [alert.view setNeedsLayout];
+    [alert.view layoutIfNeeded];
+    [self assertFont:[alert.viewText.attributedText attribute:NSFontAttributeName atIndex:0 effectiveRange:nil] base:emphasis style:UIFontTextStyleBody alert:alert];
+    [self assertFont:[alert.viewText.attributedText attribute:NSFontAttributeName atIndex:edited.length - 1 effectiveRange:nil] base:defaultFont style:UIFontTextStyleBody alert:alert];
+    XCTAssertEqualObjects(alert.viewText.text, @"Bold and default textand");
+
+    UIFont *replacement = [UIFont fontWithName:@"Georgia" size:20];
+    edited = [alert.viewText.attributedText mutableCopy];
+    [edited addAttribute:NSFontAttributeName value:replacement range:NSMakeRange(0, 2)];
+    alert.viewText.attributedText = edited;
+    for (UIContentSizeCategory category in @[UIContentSizeCategoryAccessibilityExtraExtraExtraLarge, UIContentSizeCategoryLarge]) {
+        [self setCategory:category forAlert:alert];
+        [self deliverContentSizeChange];
+        [self assertFont:[alert.viewText.attributedText attribute:NSFontAttributeName atIndex:0 effectiveRange:nil] base:replacement style:UIFontTextStyleBody alert:alert];
+        [self assertFont:[alert.viewText.attributedText attribute:NSFontAttributeName atIndex:2 effectiveRange:nil] base:emphasis style:UIFontTextStyleBody alert:alert];
+        [self assertFont:[alert.viewText.attributedText attribute:NSFontAttributeName atIndex:5 effectiveRange:nil] base:defaultFont style:UIFontTextStyleBody alert:alert];
+    }
+    [alert setBodyTextFontFamily:@"Georgia" withSize:16];
+    [self setCategory:UIContentSizeCategoryAccessibilityExtraLarge forAlert:alert];
+    [self assertFont:[alert.viewText.attributedText attribute:NSFontAttributeName atIndex:0 effectiveRange:nil] base:replacement style:UIFontTextStyleBody alert:alert];
+    [self assertFont:[alert.viewText.attributedText attribute:NSFontAttributeName atIndex:2 effectiveRange:nil] base:emphasis style:UIFontTextStyleBody alert:alert];
+    [self assertFont:[alert.viewText.attributedText attribute:NSFontAttributeName atIndex:5 effectiveRange:nil] base:[UIFont fontWithName:@"Georgia" size:16] style:UIFontTextStyleBody alert:alert];
+}
+
+- (void)testScrolledContentNeverPassesUnderTheCircle {
+    SCLAlertView *alert = [self alertWithWidth:280];
+    NSString *paragraph = @"Long content must stay below the decorative circle while scrolling. ";
+    NSString *message = [@"" stringByPaddingToLength:paragraph.length * 30 withString:paragraph startingAtIndex:0];
+    [self showAlert:alert title:@"Scrolling content" message:message];
+    [self setCategory:UIContentSizeCategoryAccessibilityExtraExtraExtraLarge forAlert:alert];
+    for (NSNumber *largerIcon in @[@NO, @YES]) {
+        alert.useLargerIcon = largerIcon.boolValue;
+        [alert.view setNeedsLayout];
+        [alert.view layoutIfNeeded];
+        XCTAssertFalse(alert.circleViewBackground.hidden);
+        UIScrollView *scroll = alert.contentScrollView;
+        CGFloat maximumOffset = scroll.contentSize.height - CGRectGetHeight(scroll.bounds);
+        XCTAssertGreaterThan(maximumOffset, 40);
+        for (NSNumber *offset in @[@0, @40, @(maximumOffset)]) {
+            [scroll setContentOffset:CGPointMake(0, offset.doubleValue) animated:NO];
+            [alert.view setNeedsLayout];
+            [alert.view layoutIfNeeded];
+            XCTAssertEqualWithAccuracy(scroll.contentOffset.y, offset.doubleValue, 0.01);
+            CGRect viewport = [scroll convertRect:scroll.bounds toView:alert.view];
+            CGRect circle = alert.circleViewBackground.frame;
+            XCTAssertGreaterThanOrEqual(CGRectGetMinY(viewport), CGRectGetMaxY(circle) + 8);
+            XCTAssertFalse(CGRectIntersectsRect(viewport, circle));
+            XCTAssertTrue(scroll.clipsToBounds);
+            CGRect body = [alert.viewText convertRect:alert.viewText.bounds toView:alert.view];
+            CGRect visibleBody = CGRectIntersection(body, viewport);
+            XCTAssertFalse(CGRectIntersectsRect(visibleBody, circle));
+        }
+        [self assertLastButtonIsReachable:alert];
+    }
+}
+
 - (void)testLongContentScrollsWithoutOverlapsInSmallPortraitAndLandscapeHosts {
     SCLAlertView *alert = [self alertWithWidth:600];
     SCLTextView *field = [alert addTextField:@"Enter a value" setDefaultText:nil];
