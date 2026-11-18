@@ -376,7 +376,7 @@ pod with this immutable private implementation commit (do not add a second copy)
 ```ruby
 pod 'SCLAlertView-Objective-C',
     :git => 'git@github.com:ey-veradigm/SCLAlertView-test-fork.git',
-    :commit => '98fbb5dc316f9376de1b31096c7ff7e6121d71b1'
+    :commit => 'b4e1210090d101f8dec04e508fb409ad2481d337'
 ```
 
 Keep the existing pod name, imports, and iOS 12.0-or-newer deployment target. No
