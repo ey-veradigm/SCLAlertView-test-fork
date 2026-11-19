@@ -11,7 +11,7 @@ Pod::Spec.new do |spec|
   spec.platform           = :ios
   spec.frameworks         = "UIKit", "AudioToolbox", "Accelerate", "CoreGraphics"
   spec.ios.deployment_target = '12.0'
-  spec.source             = { :git => "https://github.com/ey-veradigm/SCLAlertView-test-fork.git", :commit => "1161af717d8e2eaf3e4d0005a1b61072bfd56802" }
+  spec.source             = { :git => "https://github.com/ey-veradigm/SCLAlertView-test-fork.git", :commit => "a5360312a65a20d90cfdfbe050dba68971e49d7c" }
   spec.source_files       = "SCLAlertView/*"
   spec.requires_arc       = true
 end

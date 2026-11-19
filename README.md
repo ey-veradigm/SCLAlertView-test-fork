@@ -388,7 +388,7 @@ pod with this immutable fork implementation commit (do not add a second copy):
 ```ruby
 pod 'SCLAlertView-Objective-C',
     :git => 'https://github.com/ey-veradigm/SCLAlertView-test-fork.git',
-    :commit => '1161af717d8e2eaf3e4d0005a1b61072bfd56802'
+    :commit => 'a5360312a65a20d90cfdfbe050dba68971e49d7c'
 ```
 
 Keep the existing pod name, imports, and iOS 12.0-or-newer deployment target. No
