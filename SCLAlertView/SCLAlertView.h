@@ -325,73 +325,73 @@ typedef NS_ENUM(NSInteger, SCLAlertViewBackground)
  Shows a Success alert.
 
  @param vc The presenting view controller.
- @param title The alert title.
- @param subTitle The alert subtitle.
+ @param title The alert title; nil or blank omits the title.
+ @param subTitle The alert subtitle; nil or blank omits the body.
  @param closeButtonTitle The close button title (optional).
  @param duration Automatic dismissal after this duration; set 0 to disable.
  */
-- (void)showSuccess:(UIViewController *)vc title:(NSString *)title subTitle:(NSString *)subTitle closeButtonTitle:(nullable NSString *)closeButtonTitle duration:(NSTimeInterval)duration;
-- (void)showSuccess:(NSString *)title subTitle:(NSString *)subTitle closeButtonTitle:(nullable NSString *)closeButtonTitle duration:(NSTimeInterval)duration;
+- (void)showSuccess:(UIViewController *)vc title:(nullable NSString *)title subTitle:(nullable NSString *)subTitle closeButtonTitle:(nullable NSString *)closeButtonTitle duration:(NSTimeInterval)duration;
+- (void)showSuccess:(nullable NSString *)title subTitle:(nullable NSString *)subTitle closeButtonTitle:(nullable NSString *)closeButtonTitle duration:(NSTimeInterval)duration;
 
 /**
  Shows an Error alert.
 
  @param vc The presenting view controller.
- @param title The alert title.
- @param subTitle The alert subtitle.
+ @param title The alert title; nil or blank omits the title.
+ @param subTitle The alert subtitle; nil or blank omits the body.
  @param closeButtonTitle The close button title (optional).
  @param duration Automatic dismissal after this duration; set 0 to disable.
  */
-- (void)showError:(UIViewController *)vc title:(NSString *)title subTitle:(NSString *)subTitle closeButtonTitle:(nullable NSString *)closeButtonTitle duration:(NSTimeInterval)duration;
-- (void)showError:(NSString *)title subTitle:(NSString *)subTitle closeButtonTitle:(nullable NSString *)closeButtonTitle duration:(NSTimeInterval)duration;
+- (void)showError:(UIViewController *)vc title:(nullable NSString *)title subTitle:(nullable NSString *)subTitle closeButtonTitle:(nullable NSString *)closeButtonTitle duration:(NSTimeInterval)duration;
+- (void)showError:(nullable NSString *)title subTitle:(nullable NSString *)subTitle closeButtonTitle:(nullable NSString *)closeButtonTitle duration:(NSTimeInterval)duration;
 
 /**
  Shows a Notice alert.
 
  @param vc The presenting view controller.
- @param title The alert title.
- @param subTitle The alert subtitle.
+ @param title The alert title; nil or blank omits the title.
+ @param subTitle The alert subtitle; nil or blank omits the body.
  @param closeButtonTitle The close button title (optional).
  @param duration Automatic dismissal after this duration; set 0 to disable.
  */
-- (void)showNotice:(UIViewController *)vc title:(NSString *)title subTitle:(NSString *)subTitle closeButtonTitle:(nullable NSString *)closeButtonTitle duration:(NSTimeInterval)duration;
-- (void)showNotice:(NSString *)title subTitle:(NSString *)subTitle closeButtonTitle:(nullable NSString *)closeButtonTitle duration:(NSTimeInterval)duration;
+- (void)showNotice:(UIViewController *)vc title:(nullable NSString *)title subTitle:(nullable NSString *)subTitle closeButtonTitle:(nullable NSString *)closeButtonTitle duration:(NSTimeInterval)duration;
+- (void)showNotice:(nullable NSString *)title subTitle:(nullable NSString *)subTitle closeButtonTitle:(nullable NSString *)closeButtonTitle duration:(NSTimeInterval)duration;
 
 /**
  Shows a Warning alert.
 
  @param vc The presenting view controller.
- @param title The alert title.
- @param subTitle The alert subtitle.
+ @param title The alert title; nil or blank omits the title.
+ @param subTitle The alert subtitle; nil or blank omits the body.
  @param closeButtonTitle The close button title (optional).
  @param duration Automatic dismissal after this duration; set 0 to disable.
  */
-- (void)showWarning:(UIViewController *)vc title:(NSString *)title subTitle:(NSString *)subTitle closeButtonTitle:(nullable NSString *)closeButtonTitle duration:(NSTimeInterval)duration;
-- (void)showWarning:(NSString *)title subTitle:(NSString *)subTitle closeButtonTitle:(nullable NSString *)closeButtonTitle duration:(NSTimeInterval)duration;
+- (void)showWarning:(UIViewController *)vc title:(nullable NSString *)title subTitle:(nullable NSString *)subTitle closeButtonTitle:(nullable NSString *)closeButtonTitle duration:(NSTimeInterval)duration;
+- (void)showWarning:(nullable NSString *)title subTitle:(nullable NSString *)subTitle closeButtonTitle:(nullable NSString *)closeButtonTitle duration:(NSTimeInterval)duration;
 
 /**
  Shows an Info alert.
 
  @param vc The presenting view controller.
- @param title The alert title.
- @param subTitle The alert subtitle.
+ @param title The alert title; nil or blank omits the title.
+ @param subTitle The alert subtitle; nil or blank omits the body.
  @param closeButtonTitle The close button title (optional).
  @param duration Automatic dismissal after this duration; set 0 to disable.
  */
-- (void)showInfo:(UIViewController *)vc title:(NSString *)title subTitle:(NSString *)subTitle closeButtonTitle:(nullable NSString *)closeButtonTitle duration:(NSTimeInterval)duration;
-- (void)showInfo:(NSString *)title subTitle:(NSString *)subTitle closeButtonTitle:(nullable NSString *)closeButtonTitle duration:(NSTimeInterval)duration;
+- (void)showInfo:(UIViewController *)vc title:(nullable NSString *)title subTitle:(nullable NSString *)subTitle closeButtonTitle:(nullable NSString *)closeButtonTitle duration:(NSTimeInterval)duration;
+- (void)showInfo:(nullable NSString *)title subTitle:(nullable NSString *)subTitle closeButtonTitle:(nullable NSString *)closeButtonTitle duration:(NSTimeInterval)duration;
 
 /**
  Shows an Edit alert.
 
  @param vc The presenting view controller.
- @param title The alert title.
- @param subTitle The alert subtitle.
+ @param title The alert title; nil or blank omits the title.
+ @param subTitle The alert subtitle; nil or blank omits the body.
  @param closeButtonTitle The close button title (optional).
  @param duration Automatic dismissal after this duration; set 0 to disable.
  */
-- (void)showEdit:(UIViewController *)vc title:(NSString *)title subTitle:(NSString *)subTitle closeButtonTitle:(nullable NSString *)closeButtonTitle duration:(NSTimeInterval)duration;
-- (void)showEdit:(NSString *)title subTitle:(NSString *)subTitle closeButtonTitle:(nullable NSString *)closeButtonTitle duration:(NSTimeInterval)duration;
+- (void)showEdit:(UIViewController *)vc title:(nullable NSString *)title subTitle:(nullable NSString *)subTitle closeButtonTitle:(nullable NSString *)closeButtonTitle duration:(NSTimeInterval)duration;
+- (void)showEdit:(nullable NSString *)title subTitle:(nullable NSString *)subTitle closeButtonTitle:(nullable NSString *)closeButtonTitle duration:(NSTimeInterval)duration;
 
 #pragma mark - Show (custom)
 
@@ -399,52 +399,52 @@ typedef NS_ENUM(NSInteger, SCLAlertViewBackground)
  Shows a predefined style alert.
 
  @param vc The presenting view controller.
- @param title The alert title.
- @param subTitle The alert subtitle.
+ @param title The alert title; nil or blank omits the title.
+ @param subTitle The alert subtitle; nil or blank omits the body.
  @param style The predefined style.
  @param closeButtonTitle The close button title (optional).
  @param duration Automatic dismissal after this duration; set 0 to disable.
  */
-- (void)showTitle:(UIViewController *)vc title:(NSString *)title subTitle:(NSString *)subTitle style:(SCLAlertViewStyle)style closeButtonTitle:(nullable NSString *)closeButtonTitle duration:(NSTimeInterval)duration;
-- (void)showTitle:(NSString *)title subTitle:(NSString *)subTitle style:(SCLAlertViewStyle)style closeButtonTitle:(nullable NSString *)closeButtonTitle duration:(NSTimeInterval)duration;
+- (void)showTitle:(UIViewController *)vc title:(nullable NSString *)title subTitle:(nullable NSString *)subTitle style:(SCLAlertViewStyle)style closeButtonTitle:(nullable NSString *)closeButtonTitle duration:(NSTimeInterval)duration;
+- (void)showTitle:(nullable NSString *)title subTitle:(nullable NSString *)subTitle style:(SCLAlertViewStyle)style closeButtonTitle:(nullable NSString *)closeButtonTitle duration:(NSTimeInterval)duration;
 
 /**
  Shows a custom alert with custom image and color.
 
  @param vc The presenting view controller.
- @param image The icon image.
- @param color The primary color (buttons, top circle, borders).
- @param title The alert title.
- @param subTitle The alert subtitle.
+ @param image The icon image, or nil for no icon.
+ @param color The primary color (buttons, top circle, borders), or nil to leave unset.
+ @param title The alert title; nil or blank omits the title.
+ @param subTitle The alert subtitle; nil or blank omits the body.
  @param closeButtonTitle The close button title (optional).
  @param duration Automatic dismissal after this duration; set 0 to disable.
  */
-- (void)showCustom:(UIViewController *)vc image:(UIImage *)image color:(UIColor *)color title:(NSString *)title subTitle:(NSString *)subTitle closeButtonTitle:(nullable NSString *)closeButtonTitle duration:(NSTimeInterval)duration;
-- (void)showCustom:(UIImage *)image color:(UIColor *)color title:(NSString *)title subTitle:(NSString *)subTitle closeButtonTitle:(nullable NSString *)closeButtonTitle duration:(NSTimeInterval)duration;
+- (void)showCustom:(UIViewController *)vc image:(nullable UIImage *)image color:(nullable UIColor *)color title:(nullable NSString *)title subTitle:(nullable NSString *)subTitle closeButtonTitle:(nullable NSString *)closeButtonTitle duration:(NSTimeInterval)duration;
+- (void)showCustom:(nullable UIImage *)image color:(nullable UIColor *)color title:(nullable NSString *)title subTitle:(nullable NSString *)subTitle closeButtonTitle:(nullable NSString *)closeButtonTitle duration:(NSTimeInterval)duration;
 
 /**
  Shows a Waiting alert with UIActivityIndicator.
 
  @param vc The presenting view controller.
- @param title The alert title.
- @param subTitle The alert subtitle.
+ @param title The alert title; nil or blank omits the title.
+ @param subTitle The alert subtitle; nil or blank omits the body.
  @param closeButtonTitle The close button title (optional).
  @param duration Automatic dismissal after this duration; set 0 to disable.
  */
-- (void)showWaiting:(UIViewController *)vc title:(NSString *)title subTitle:(NSString *)subTitle closeButtonTitle:(nullable NSString *)closeButtonTitle duration:(NSTimeInterval)duration;
-- (void)showWaiting:(NSString *)title subTitle:(NSString *)subTitle closeButtonTitle:(nullable NSString *)closeButtonTitle duration:(NSTimeInterval)duration;
+- (void)showWaiting:(UIViewController *)vc title:(nullable NSString *)title subTitle:(nullable NSString *)subTitle closeButtonTitle:(nullable NSString *)closeButtonTitle duration:(NSTimeInterval)duration;
+- (void)showWaiting:(nullable NSString *)title subTitle:(nullable NSString *)subTitle closeButtonTitle:(nullable NSString *)closeButtonTitle duration:(NSTimeInterval)duration;
 
 /**
  Shows a Question alert.
 
  @param vc The presenting view controller.
- @param title The alert title.
- @param subTitle The alert subtitle.
+ @param title The alert title; nil or blank omits the title.
+ @param subTitle The alert subtitle; nil or blank omits the body.
  @param closeButtonTitle The close button title (optional).
  @param duration Automatic dismissal after this duration; set 0 to disable.
  */
-- (void)showQuestion:(UIViewController *)vc title:(NSString *)title subTitle:(NSString *)subTitle closeButtonTitle:(nullable NSString *)closeButtonTitle duration:(NSTimeInterval)duration;
-- (void)showQuestion:(NSString *)title subTitle:(NSString *)subTitle closeButtonTitle:(nullable NSString *)closeButtonTitle duration:(NSTimeInterval)duration;
+- (void)showQuestion:(UIViewController *)vc title:(nullable NSString *)title subTitle:(nullable NSString *)subTitle closeButtonTitle:(nullable NSString *)closeButtonTitle duration:(NSTimeInterval)duration;
+- (void)showQuestion:(nullable NSString *)title subTitle:(nullable NSString *)subTitle closeButtonTitle:(nullable NSString *)closeButtonTitle duration:(NSTimeInterval)duration;
 
 @end
 
@@ -468,10 +468,10 @@ typedef NS_ENUM(NSInteger, SCLAlertViewBackground)
 
 #pragma mark - Setters
 @property(copy, nonatomic, readonly) SCLAlertViewShowBuilder *(^viewController)(UIViewController *viewController);
-@property(copy, nonatomic, readonly) SCLAlertViewShowBuilder *(^image)(UIImage *image);
-@property(copy, nonatomic, readonly) SCLAlertViewShowBuilder *(^color)(UIColor *color);
-@property(copy, nonatomic, readonly) SCLAlertViewShowBuilder *(^title)(NSString *title);
-@property(copy, nonatomic, readonly) SCLAlertViewShowBuilder *(^subTitle)(NSString *subTitle);
+@property(copy, nonatomic, readonly) SCLAlertViewShowBuilder *(^image)(UIImage * _Nullable image);
+@property(copy, nonatomic, readonly) SCLAlertViewShowBuilder *(^color)(UIColor * _Nullable color);
+@property(copy, nonatomic, readonly) SCLAlertViewShowBuilder *(^title)(NSString * _Nullable title);
+@property(copy, nonatomic, readonly) SCLAlertViewShowBuilder *(^subTitle)(NSString * _Nullable subTitle);
 @property(copy, nonatomic, readonly) SCLAlertViewShowBuilder *(^completeText)(NSString *completeText);
 @property(copy, nonatomic, readonly) SCLAlertViewShowBuilder *(^style)(SCLAlertViewStyle style);
 @property(copy, nonatomic, readonly) SCLAlertViewShowBuilder *(^closeButtonTitle)(NSString *closeButtonTitle);

@@ -3,19 +3,19 @@ SCLAlertView-Objective-C
 
 Animated Alert View written in Swift but ported to Objective-C, which can be used as a `UIAlertView` or `UIAlertController` replacement.
 
-### Private FollowMyHealth copy
+### FollowMyHealth fork
 
-This **private** repository imports the complete Git ancestry of
+This fork imports the complete Git ancestry of
 [dogo/SCLAlertView](https://github.com/dogo/SCLAlertView) through stable release
 `1.4.2` (`09d5749dc3acfe0be3d6779845058252b83b9e59`), the latest stable release
 checked on November 18, 2026. Upstream commit history, the original authorship, the
-MIT [license](LICENSE), and the acknowledgements below are preserved. Private
+MIT [license](LICENSE), and the acknowledgements below are preserved. Fork
 podspec version `1.4.3-fmh.1` adds Dynamic Type; upstream release `1.4.2` does
 **not** contain these changes. This copy uses a commit pin, not a fork release tag.
-Do not publish this copy or its podspec to CocoaPods trunk.
+Do not publish its podspec to CocoaPods trunk.
 
 FMHmobile-iOS has not been changed and does not consume this copy yet. See
-[private CocoaPods consumption](#followmyhealth-private-cocoapods-consumption)
+[CocoaPods consumption](#followmyhealth-cocoapods-consumption)
 for a future, separately reviewed dependency change.
 
 ### Dynamic Type
@@ -48,7 +48,15 @@ not fit side by side use a vertical stack. Custom views, switch labels, and
 fields supplied through `addCustomTextField:` retain caller-managed typography
 and sizing.
 
-The following badges describe **upstream**, not validation of this private copy.
+For Swift compatibility with older consumers, all `show...` overloads accept
+`nil` titles and subtitles to omit those views. `showCustom` also accepts `nil`
+image/color values, preserving the existing unset icon/color behavior and any
+`customViewColor` override. The corresponding show-builder inputs are optional
+as well. Presenting view controllers remain required for controller-based
+overloads. Upstream's nonoptional `String` parameter for `attributedFormatBlock`
+is unchanged; use it directly rather than conditionally unwrapping it.
+
+The following badges describe **upstream**, not validation of this fork.
 
 ![Upstream Build Status](https://github.com/dogo/SCLAlertView/workflows/Building/badge.svg)
 [![Cocoapods](http://img.shields.io/cocoapods/v/SCLAlertView-Objective-C.svg)](http://cocoapods.org/?q=SCLAlertView-Objective-C)
@@ -372,35 +380,35 @@ typedef NS_ENUM(NSInteger, SCLAlertViewBackground)
 
 ### Installation
 
-#### FollowMyHealth private CocoaPods consumption
+#### FollowMyHealth CocoaPods consumption
 
 In a **future** FMHmobile-iOS change, replace the existing declaration of the same
-pod with this immutable private implementation commit (do not add a second copy):
+pod with this immutable fork implementation commit (do not add a second copy):
 
 ```ruby
 pod 'SCLAlertView-Objective-C',
-    :git => 'git@github.com:ey-veradigm/SCLAlertView-test-fork.git',
+    :git => 'https://github.com/ey-veradigm/SCLAlertView-test-fork.git',
     :commit => '1161af717d8e2eaf3e4d0005a1b61072bfd56802'
 ```
 
 Keep the existing pod name, imports, and iOS 12.0-or-newer deployment target. No
 private specs repository or fork release tag is required: CocoaPods uses the
-Podfile's explicit Git/commit override. Developers need
-repository read access and GitHub SSH authentication; CI needs a read-only deploy
-key or appropriately scoped GitHub App credentials. HTTPS with an authenticated
-Git credential helper is also supported by the podspec. Never put tokens or
-private keys in a Podfile, URL, or source file.
+Podfile's explicit Git/commit override. The public repository can be read over
+HTTPS without credentials. If it is made private again, developers and CI need
+repository read access through an authenticated Git credential helper, a
+read-only SSH deploy key, or appropriately scoped GitHub App credentials. Never
+put tokens or private keys in a Podfile, URL, or source file.
 
 From that application's existing Bundler/CocoaPods environment, run
 `bundle exec pod update SCLAlertView-Objective-C --no-repo-update`, inspect the
 targeted Podfile.lock diff, and commit both Podfile and Podfile.lock. The lockfile
-must identify this private remote and the exact implementation commit above.
+must identify this fork remote and the exact implementation commit above.
 Pin future updates to a newly reviewed implementation SHA rather than a floating
 branch. Validate the application's alerts before adopting it; this repository
 does not perform that dependency switch.
 
 The remaining installation examples refer to the **public upstream** package
-and do not install the private Dynamic Type changes.
+and do not install this fork's Dynamic Type changes.
 
 SCLAlertView-Objective-C is available through :
 
@@ -423,13 +431,19 @@ repeated live changes, custom and attributed fonts, small portrait/landscape
 hosts, scrolling and button hit testing, horizontal fallback, timer placement,
 keyboard frame changes, retained editing/selection, attribute-only message edits,
 nonzero-offset circle clearance, and new-window alerts with absent title/body text.
-The build workflow is configured to run that target, build the framework, and
-lint the pod. It uses an Intel macOS runner and selects an installed iPhone
+The build workflow is configured to type-check Swift callers passing `nil` to
+optional presentation inputs, run that target, build the framework, and lint the
+pod. It uses an Intel macOS runner and selects an installed iPhone
 simulator instead of depending on a particular simulator OS image.
 
 On macOS with Xcode and an installed simulator (adjust the destination as needed):
 
 ```sh
+xcrun --sdk iphonesimulator swiftc -typecheck \
+  -sdk "$(xcrun --sdk iphonesimulator --show-sdk-path)" \
+  -target "$(uname -m)-apple-ios12.0-simulator" \
+  -import-objc-header SCLAlertView/SCLAlertView.h \
+  SCLAlertViewTests/SwiftNullability.swift
 xcrun simctl list devices available
 xcodebuild -project SCLAlertView.xcodeproj -scheme SCLAlertView \
   -destination 'platform=iOS Simulator,name=iPhone 16' \

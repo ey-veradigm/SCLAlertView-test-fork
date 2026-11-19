@@ -37,6 +37,14 @@ jobs:
             puts "udid=#{device.fetch("udid")}"
           ' >> "$GITHUB_OUTPUT"
 
+      - name: Check Swift nullable presentation inputs
+        run: |
+          xcrun --sdk iphonesimulator swiftc -typecheck \
+            -sdk "$(xcrun --sdk iphonesimulator --show-sdk-path)" \
+            -target "$(uname -m)-apple-ios12.0-simulator" \
+            -import-objc-header SCLAlertView/SCLAlertView.h \
+            SCLAlertViewTests/SwiftNullability.swift
+
       - name: Building and testing ${{ matrix.scheme }}
         run: |
           set -o pipefail && xcodebuild -project SCLAlertView.xcodeproj \

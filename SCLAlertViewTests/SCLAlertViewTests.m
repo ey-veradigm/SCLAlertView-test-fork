@@ -413,12 +413,21 @@
     [self assertLastButtonIsReachable:alert];
 }
 
-- (void)testNewWindowWithMissingTextAndRemovedCircleUsesHostBounds {
+- (void)testWarningAllowsNilTitleWithoutRemovingItsBody {
+    SCLAlertView *alert = [self alertWithWidth:240];
+    [alert showWarning:self.host title:nil subTitle:@"Cancel appointment?" closeButtonTitle:@"No" duration:0];
+    [self setCategory:UIContentSizeCategoryAccessibilityExtraExtraExtraLarge forAlert:alert];
+    XCTAssertNil(alert.labelTitle);
+    XCTAssertEqualObjects(alert.viewText.text, @"Cancel appointment?");
+    [self assertLastButtonIsReachable:alert];
+}
+
+- (void)testNewWindowCustomAlertWithNilInputsAndRemovedCircleUsesHostBounds {
     SCLAlertView *alert = [[SCLAlertView alloc] initWithNewWindowWidth:1000];
     alert.showAnimationType = SCLAlertViewShowAnimationFadeIn;
     [self.alerts addObject:alert];
     [alert removeTopCircle];
-    [alert showInfo:@"" subTitle:@"" closeButtonTitle:@"Close" duration:0];
+    [alert showCustom:nil color:nil title:nil subTitle:nil closeButtonTitle:@"Close" duration:0];
     [alert setTitleFontFamily:@"Courier" withSize:22];
     [alert setBodyTextFontFamily:@"Courier" withSize:18];
     [self setCategory:UIContentSizeCategoryAccessibilityExtraExtraExtraLarge forAlert:alert];

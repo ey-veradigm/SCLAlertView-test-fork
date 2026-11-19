@@ -12,6 +12,8 @@ Based on upstream stable `1.4.2`, retaining its complete Git ancestry and MIT li
   needed, and keep button timers clear of their titles after resizing.
 - Preserve unscaled message font runs during attribute edits and reserve fixed
   viewport clearance so scrolled content cannot pass underneath the circle.
+- Restore Swift callers' ability to pass nil titles/subtitles and custom
+  image/color inputs by correcting upstream's presentation nullability annotations.
 - Add focused XCTest regressions and private CocoaPods consumption instructions.
   FMHmobile-iOS and its dependency declaration are unchanged.
 
